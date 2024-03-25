@@ -1,15 +1,9 @@
 import functools
 import pathlib
-import sys
 
 from nodc_geography import shape_files
 
-
-if getattr(sys, 'frozen', False):
-    THIS_DIR = pathlib.Path(sys.executable).parent
-else:
-    THIS_DIR = pathlib.Path(__file__).parent
-
+THIS_DIR = pathlib.Path(__file__).parent
 CONFIG_DIR = THIS_DIR / 'CONFIG_FILES'
 
 
