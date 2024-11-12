@@ -55,7 +55,6 @@ class ShapeFilesConfig:
         if not self._file_mapping.get(file_stem):
             logger.error(f'No configuration found for shapefile: {file_stem}')
             return {}
-        print(f'{self._file_mapping[file_stem]=}')
         if not self._file_mapping[file_stem].get('active'):
             logger.error(f'Configuration for shapefile {file_stem} is not active!')
             return {}

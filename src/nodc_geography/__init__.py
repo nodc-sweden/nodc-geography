@@ -29,10 +29,3 @@ def _get_shapefile_for_variable(variable: str, **kwargs) -> shape_files.ShapeFil
 @functools.cache
 def _get_shape_file_obj(path: pathlib.Path, **kwargs):
     return shape_files.ShapeFile(path, **kwargs)
-
-
-if __name__ == '__main__':
-    name = get_shape_file_info_at_position(x_pos=897525.051, y_pos=7323117.602, variable='location_water_district')
-    print(name)
-    name = get_shape_file_info_at_position(x_pos=897525.051, y_pos=7323117.602, variable='location_county')
-    print(name)
