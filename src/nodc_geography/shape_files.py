@@ -11,18 +11,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-if getattr(sys, 'frozen', False):
-    THIS_DIR = pathlib.Path(sys.executable).parent
-else:
-    THIS_DIR = pathlib.Path(__file__).parent
-
-SHAPE_FILES_DIR = THIS_DIR / 'SHAPE_FILES'
-
-
 class ShapeFilesConfig:
 
-    def __init__(self, path: str | pathlib.Path) -> None:
+    def __init__(self, path: str | pathlib.Path, shape_files_dir: pathlib.Path) -> None:
         self._path = pathlib.Path(path)
+        self._shape_files_dir = shape_files_dir
         self._config = dict()
         self._variable_to_path_mapping = dict()
         self._file_mapping = dict()
@@ -44,7 +37,7 @@ class ShapeFilesConfig:
                     logger.warning(f'Variable already added from other file: {variable} (duplicate in '
                                             f'{file_stem})')
                     continue
-                file_path = SHAPE_FILES_DIR / f'{file_stem}.shp'
+                file_path = self._shape_files_dir / f'{file_stem}.shp'
                 if not file_path.exists():
                     logger.warning(f'Shape file does not exist: {file_path}')
                     continue
