@@ -1,12 +1,10 @@
 import functools
+import logging
 import pathlib
-import sys
 
 import geopandas as gpd
 import yaml
 from shapely.geometry import Point
-
-import logging
 
 logger = logging.getLogger(__name__)
 
