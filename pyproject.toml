@@ -1,6 +1,6 @@
 [project]
 name = "nodc-geography"
-version = "0.1.0"
+version = "1.0.0"
 description = "Default template for PDM package"
 authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
@@ -21,13 +21,14 @@ build-backend = "pdm.backend"
 [tool.pdm]
 distribution = true
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "pyinstaller>=4.5.1",
-]
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 mypkg = ["."]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=4.5.1",
+    "matplotlib>=3.10.0",
+]
