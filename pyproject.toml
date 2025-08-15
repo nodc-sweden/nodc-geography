@@ -1,6 +1,6 @@
 [project]
 name = "nodc-geography"
-version = "1.0.0"
+version = "1.0.0b"
 description = "Default template for PDM package"
 authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
@@ -31,4 +31,5 @@ mypkg = ["."]
 dev = [
     "pyinstaller>=4.5.1",
     "matplotlib>=3.10.0",
+    "ruff>=0.12.9",
 ]
