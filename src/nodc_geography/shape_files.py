@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class ShapeFilesConfig:
-
     def __init__(self, path: str | pathlib.Path, shape_files_dir: pathlib.Path) -> None:
         self._path = pathlib.Path(path)
         self._shape_files_dir = shape_files_dir
@@ -26,46 +25,47 @@ class ShapeFilesConfig:
 
     def _save_mapping(self) -> None:
         for item in self._config:
-            if not item.get('active'):
+            if not item.get("active"):
                 continue
-            file_stem = item['name']
+            file_stem = item["name"]
             self._file_mapping[file_stem] = item
-            for variable in item['mapping']:
+            for variable in item["mapping"]:
                 if self._variable_to_path_mapping.get(variable):
-                    logger.warning(f'Variable already added from other file: {variable} (duplicate in '
-                                            f'{file_stem})')
+                    logger.warning(
+                        f"Variable already added from other file: {variable} (duplicate in "
+                        f"{file_stem})"
+                    )
                     continue
-                file_path = self._shape_files_dir / f'{file_stem}.shp'
+                file_path = self._shape_files_dir / f"{file_stem}.shp"
                 if not file_path.exists():
-                    logger.warning(f'Shape file does not exist: {file_path}')
+                    logger.warning(f"Shape file does not exist: {file_path}")
                     continue
                 self._variable_to_path_mapping[variable] = file_path
 
     def get_translations_for_file(self, file_path: pathlib.Path) -> dict:
         file_stem = file_path.stem
         if not self._file_mapping.get(file_stem):
-            logger.error(f'No configuration found for shapefile: {file_stem}')
+            logger.error(f"No configuration found for shapefile: {file_stem}")
             return {}
-        if not self._file_mapping[file_stem].get('active'):
-            logger.error(f'Configuration for shapefile {file_stem} is not active!')
+        if not self._file_mapping[file_stem].get("active"):
+            logger.error(f"Configuration for shapefile {file_stem} is not active!")
             return {}
-        return self._file_mapping[file_stem]['mapping']
+        return self._file_mapping[file_stem]["mapping"]
 
     def get_file_path_for_variable(self, variable: str) -> pathlib.Path:
         return self._variable_to_path_mapping.get(variable)
 
 
 class ShapeFile:
-
-    def __init__(self, path: str | pathlib.Path, epsg: str = '3006', **kwargs):
+    def __init__(self, path: str | pathlib.Path, epsg: str = "3006", **kwargs):
         self._path = pathlib.Path(path)
-        self._epsg = 'EPSG:' + epsg.split(':')[-1]
+        self._epsg = "EPSG:" + epsg.split(":")[-1]
         self._translation = dict()
         self._load_file()
 
     @property
     def _epsg_nr(self):
-        return self._epsg.split(':')[1]
+        return self._epsg.split(":")[1]
 
     @property
     def gdf(self) -> gpd.GeoDataFrame:
@@ -86,10 +86,12 @@ class ShapeFile:
         boolean = self._gdf.contains(Point(x_pos, y_pos))
         translated_variable = self._translation.get(variable)
         if not translated_variable:
-            logger.warning(f'No translation found for variable: {variable}')
+            logger.warning(f"No translation found for variable: {variable}")
             return
         if translated_variable not in self._gdf.columns:
-            logger.warning(f'Translated variable {translated_variable} not in file {self._path}')
+            logger.warning(
+                f"Translated variable {translated_variable} not in file {self._path}"
+            )
             return
         filtered = self._gdf[boolean][translated_variable]
         if len(filtered) != 1:
@@ -97,5 +99,3 @@ class ShapeFile:
             #                               f' {translated_variable}')
             return
         return filtered.values[0]
-
-
