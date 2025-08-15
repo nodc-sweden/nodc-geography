@@ -67,6 +67,10 @@ class ShapeFile:
     def _epsg_nr(self):
         return self._epsg.split(':')[1]
 
+    @property
+    def gdf(self) -> gpd.GeoDataFrame:
+        return self._gdf
+
     def _load_file(self):
         self._gdf = gpd.read_file(self._path)
         self._gdf.crs = self._epsg
@@ -89,8 +93,8 @@ class ShapeFile:
             return
         filtered = self._gdf[boolean][translated_variable]
         if len(filtered) != 1:
-            logger.warning(f'{len(filtered)} posts found for pos: {x_pos}-{y_pos} and variable:'
-                                          f' {translated_variable}')
+            # logger.warning(f'{len(filtered)} posts found for pos: {x_pos}-{y_pos} and variable:'
+            #                               f' {translated_variable}')
             return
         return filtered.values[0]
 

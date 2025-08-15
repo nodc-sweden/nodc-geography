@@ -5,9 +5,30 @@ import pathlib
 
 from nodc_geography import shape_files
 
-logger = logging.getLogger(__name__)
+
+def get_user_given_config_dir() -> pathlib.Path | None:
+    path = pathlib.Path(os.getcwd()) / 'config_directory.txt'
+    if not path.exists():
+        return
+    with open(path) as fid:
+        config_path = fid.readline().strip()
+        if not config_path:
+            return
+        config_path = pathlib.Path(config_path)
+        if not config_path.exists():
+            return
+        return config_path
+
 
 CONFIG_ENV = 'NODC_CONFIG'
+
+home = pathlib.Path.home()
+OTHER_CONFIG_SOURCES = [
+    home / 'NODC_CONFIG',
+    home / '.NODC_CONFIG',
+    home / 'nodc_config',
+    home / '.nodc_config',
+]
 
 CONFIG_SUBDIRECTORY = 'sharkweb_shapefiles'
 CONFIG_FILE_NAMES = [
@@ -84,13 +105,23 @@ SHAPE_FILES = [
 
 
 CONFIG_DIRECTORY = None
-if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
-    CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV)) / CONFIG_SUBDIRECTORY
+conf_dir = get_user_given_config_dir()
+if conf_dir:
+    CONFIG_DIRECTORY = conf_dir / CONFIG_SUBDIRECTORY
+else:
+    if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
+        CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV)) / CONFIG_SUBDIRECTORY
+    else:
+        for directory in OTHER_CONFIG_SOURCES:
+            if directory.exists():
+                CONFIG_DIRECTORY = directory / CONFIG_SUBDIRECTORY
+                break
 
 
 def get_config_path(name: str = None) -> pathlib.Path:
     if not CONFIG_DIRECTORY:
-        raise NotADirectoryError(f'Config directory not found. Environment path {CONFIG_ENV} does not seem to be set.')
+        raise NotADirectoryError(
+            f'Config directory not found. Environment path {CONFIG_ENV} does not seem to be set and not other config directory was found. ')
     if not name:
         return CONFIG_DIRECTORY
     if name not in CONFIG_FILE_NAMES:
