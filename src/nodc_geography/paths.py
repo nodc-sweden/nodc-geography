@@ -27,6 +27,7 @@ OTHER_CONFIG_SOURCES = [
 ]
 
 CONFIG_SUBDIRECTORY = "sharkweb_shapefiles"
+BATHYMERTY_SUBDIRECTORY = "bathymetry"
 CONFIG_FILE_NAMES = ["shape_file_config.yaml"]
 
 SHAPE_FILES = [
@@ -99,16 +100,20 @@ SHAPE_FILES = [
 
 
 CONFIG_DIRECTORY = None
+BATHYMETRY_DIRECTORY = None
 conf_dir = get_user_given_config_dir()
 if conf_dir:
     CONFIG_DIRECTORY = conf_dir / CONFIG_SUBDIRECTORY
+    BATHYMETRY_DIRECTORY = conf_dir / BATHYMERTY_SUBDIRECTORY
 else:
     if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
         CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV)) / CONFIG_SUBDIRECTORY
+        BATHYMETRY_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV)) / BATHYMERTY_SUBDIRECTORY
     else:
         for directory in OTHER_CONFIG_SOURCES:
             if directory.exists():
                 CONFIG_DIRECTORY = directory / CONFIG_SUBDIRECTORY
+                BATHYMETRY_DIRECTORY = directory / BATHYMERTY_SUBDIRECTORY
                 break
 
 

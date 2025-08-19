@@ -1,8 +1,9 @@
 import sqlite3
 
-from nodc_geography.paths import CONFIG_DIRECTORY
+from nodc_geography.paths import BATHYMETRY_DIRECTORY
 
-DB_PATH = CONFIG_DIRECTORY / "lookup_database.db"
+DB_PATH = BATHYMETRY_DIRECTORY / "bathymetry_database.db"
+print(f"Bathymetry database ")
 
 
 def create_database():
@@ -10,56 +11,54 @@ def create_database():
         cursor = connection.cursor()
 
         create_table_query = """
-        CREATE TABLE IF NOT EXISTS Locations (
+        CREATE TABLE IF NOT EXISTS Bathymetry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            x_pos REAL,
-            y_pos REAL,
-            variable TEXT,
-            name TEXT, 
-            UNIQUE(x_pos, y_pos, variable)
+            lat REAL,
+            lon REAL,
+            depth REAL,
+            file_name TEXT,
+            UNIQUE(lat, lon, file_name)
         );
         """
 
         cursor.execute(create_table_query)
 
         connection.commit()
-        print("Location database created!")
 
 
-def add(x_pos: float, y_pos: float, variable: str, name: str):
+def add(lat: float, lon: float, depth: float, file_name: str):
     with sqlite3.connect(DB_PATH) as connection:
         cursor = connection.cursor()
 
         insert_query = """
-        INSERT INTO Locations (x_pos, y_pos, variable, name) 
+        INSERT INTO Bathymetry (lat, lon, depth, file_name) 
         VALUES (?, ?, ?, ?);
         """
-        data = (x_pos, y_pos, variable, name)
+        data = (lat, lon, depth, file_name)
 
         cursor.execute(insert_query, data)
 
         connection.commit()
 
 
-def get(x_pos: float, y_pos: float, variable: str) -> str:
+def get(lat: float, lon: float) -> float:
     with sqlite3.connect(DB_PATH) as connection:
         cursor = connection.cursor()
 
         query = """
-           SELECT * FROM Locations 
-           WHERE x_pos = ? 
-           AND y_pos = ? 
-           AND variable = ?
+           SELECT * FROM Bathymetry 
+           WHERE lat = ? 
+           AND lon = ? 
            ;
            """
-        data = (x_pos, y_pos, variable)
+        data = (lat, lon)
 
         cursor.execute(query, data)
         result = cursor.fetchone()
 
         connection.commit()
         if result:
-            return result[-1]
+            return result[-2]
 
 
 create_database()

@@ -1,23 +1,39 @@
 import functools
 import pathlib
 
-from nodc_geography import db
+from nodc_geography import bathymetry_db
+from nodc_geography import location_db
 from nodc_geography import shape_files
+from nodc_geography import bathymetry
 from nodc_geography.paths import get_config_path
+
+@functools.cache
+def get_bathymetry_depth_at_position(
+        lat: float, lon: float
+    ) -> float | None:
+
+    depth = bathymetry_db.get(lat, lon)
+    if depth:
+        return depth
+    depth, file_name = (
+        bathymetry.get_emodnet_bathymetry_depth_and_source_name_at_position(lat, lon))
+    if depth:
+        bathymetry_db.add(lat, lon, depth, file_name)
+    return depth
 
 
 @functools.cache
 def get_shape_file_info_at_position(
     x_pos: float, y_pos: float, variable: str
 ) -> str | None:
-    db_name = db.get(x_pos, y_pos, variable)
+    db_name = location_db.get(x_pos, y_pos, variable)
     if db_name:
         return db_name
     shape_file_obj = _get_shapefile_for_variable(variable)
     name = shape_file_obj.get(x_pos=x_pos, y_pos=y_pos, variable=variable)
     if name:
         name = str(name)
-        db.add(x_pos, y_pos, variable, name)
+        location_db.add(x_pos, y_pos, variable, name)
     return name
 
 
