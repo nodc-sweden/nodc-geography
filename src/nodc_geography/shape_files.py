@@ -99,3 +99,28 @@ class ShapeFile:
             #                               f' {translated_variable}')
             return
         return filtered.values[0]
+
+    @functools.cache
+    def get_all(self, x_pos: float, y_pos: float, variable: str) -> dict:
+        """Returns all values for the given variable and its siblings in the same shape file.
+        variable kan be location_county, location_water_district etc.
+        the variable is mapped by the column_translation to match the files internal variable"""
+
+        boolean = self._gdf.contains(Point(x_pos, y_pos))
+        translated_variable = self._translation.get(variable)
+        if not translated_variable:
+            logger.warning(f"No translation found for variable: {variable}")
+            return {}
+        if translated_variable not in self._gdf.columns:
+            logger.warning(
+                f"Translated variable {translated_variable} not in file {self._path}"
+            )
+            return {}
+        filtered = self._gdf[boolean]
+        info = dict()
+        if len(filtered) == 1:
+            for var, tran_var in self._translation.items():
+                if tran_var not in self._gdf.columns:
+                    continue
+                info[var] = self._gdf[boolean][tran_var].values[0] or ""
+        return info

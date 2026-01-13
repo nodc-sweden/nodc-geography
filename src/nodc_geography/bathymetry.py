@@ -26,9 +26,11 @@ def _get_polars_dataframe_for_emodnet_bathymetry(path: pathlib.Path) -> pl.DataF
     return pl.read_csv(path, separator=";")
 
 
-def _get_emodnet_bathymetry_depth_at_position_in_file(path: pathlib.Path,
+def _get_emodnet_bathymetry_info_at_position_in_file(path: pathlib.Path,
                                                      lat: float,
-                                                     lon: float) -> float | None:
+                                                     lon: float) -> dict | None:
+    if not path:
+        raise FileNotFoundError
     df = _get_polars_dataframe_for_emodnet_bathymetry(path)
     df = df.with_columns(
         abs_lat_diff=(pl.col("lat") - lat).abs(),
@@ -48,7 +50,7 @@ def _get_emodnet_bathymetry_depth_at_position_in_file(path: pathlib.Path,
             pl.col.abs_lon_diff == pl.col.abs_lon_diff.min(),
         ).collect()
     )
-    return -df_filtered.to_dicts()[0]["z"]
+    return df_filtered.to_dicts()[0]
 
 
 def get_emodnet_bathymetry_depth_at_position(lat: float,
@@ -57,26 +59,34 @@ def get_emodnet_bathymetry_depth_at_position(lat: float,
         directory=BATHYMETRY_DIRECTORY,
         lat=lat, lon=lon
     )
-    return _get_emodnet_bathymetry_depth_at_position_in_file(
+    result = _get_emodnet_bathymetry_info_at_position_in_file(
         path, lat, lon
     )
+    if not result:
+        return result
+    return result["z"]
 
 
-def get_emodnet_bathymetry_depth_and_source_name_at_position(lat: float,
-                                                             lon: float) -> tuple[float | None, str]:
+def get_emodnet_bathymetry_info_at_position(lat: float,
+                                            lon: float) -> dict:
     path = _get_emodnet_bathymetry_file_path_for_position(
         directory=BATHYMETRY_DIRECTORY,
         lat=lat, lon=lon
     )
-    return _get_emodnet_bathymetry_depth_at_position_in_file(
+    result = _get_emodnet_bathymetry_info_at_position_in_file(
         path, lat, lon
-    ), path.name
+    )
+    if not result:
+        return {}
+    result["source_file_name"] = path.name
+    return result
 
 
 def rename_emodnet_bathymetry_xyz_files(directory: str):
+    import re
     root = pathlib.Path(directory)
     for path in root.iterdir():
-        if not path.name.startswith("D"):
+        if not re.match(r"\D\d_\d{4}.xyz", path.name):
             continue
         print(f"Renaming file: {path}")
         df = pl.read_csv(path, separator=";", new_columns=["lon", "lat", "z"],
@@ -96,8 +106,8 @@ def rename_emodnet_bathymetry_xyz_files(directory: str):
 
 
 if __name__ == "__main__":
-    # rename_emodnet_bathymetry_xyz_files(r"C:\mw\git\nodc_config\bathymetry\D6_2024.xyz")
-    dd = get_emodnet_bathymetry_depth_at_position(55.3, 15)
-    print(dd)
+    rename_emodnet_bathymetry_xyz_files(r"C:\mw\git\nodc_config\bathymetry")
+    # dd = get_emodnet_bathymetry_depth_at_position(55.3, 15)
+    # print(dd)
 
 

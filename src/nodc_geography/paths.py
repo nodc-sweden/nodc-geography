@@ -115,6 +115,9 @@ else:
                 CONFIG_DIRECTORY = directory / CONFIG_SUBDIRECTORY
                 BATHYMETRY_DIRECTORY = directory / BATHYMERTY_SUBDIRECTORY
                 break
+                
+if BATHYMETRY_DIRECTORY is not None:
+    BATHYMETRY_DIRECTORY.mkdir(exist_ok=True)
 
 
 def get_config_path(name: str = None) -> pathlib.Path:
