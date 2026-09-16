@@ -9,8 +9,7 @@ from nodc_geography.paths import get_config_directory, get_config_path
 
 @functools.cache
 def get_shape_file_info_at_position(
-    nodc_conf: Config,
-    x_pos: float, y_pos: float, variable: str
+    nodc_conf: Config, x_pos: float, y_pos: float, variable: str
 ) -> dict[str, str]:
     db_info = location_db.get_all_for_position(x_pos, y_pos)
     if db_info.get(variable):
@@ -33,8 +32,9 @@ def get_shape_file_info_at_position(
 
 
 @functools.cache
-def _get_shapefile_for_variable(nodc_conf: Config, variable: str, **kwargs) -> (
-        shape_files.ShapeFile):
+def _get_shapefile_for_variable(
+    nodc_conf: Config, variable: str, **kwargs
+) -> shape_files.ShapeFile:
     """Returns a shape_file.ShapeFile object that holds the given variable"""
     shape_file_config = shape_files.ShapeFilesConfig(
         get_config_path(nodc_conf, "shape_file_config.yaml"),
@@ -56,9 +56,3 @@ def clear_cache():
     get_shape_file_info_at_position.cache_clear()
     _get_shapefile_for_variable.cache_clear()
     _get_shape_file_obj.cache_clear()
-
-if __name__ == "__main__":
-    variable = "location_svar_sea_area_code"
-    x_pos = 610641
-    y_pos = 6825175
-    info = get_shape_file_info_at_position(x_pos, y_pos, variable)

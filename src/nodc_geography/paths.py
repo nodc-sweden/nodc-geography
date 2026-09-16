@@ -2,6 +2,7 @@ import pathlib
 
 from nodc_config import Config
 
+
 def get_config_path(nodc_conf: Config, name) -> pathlib.Path:
     path = nodc_conf.get_path(name)
     if path is None:
