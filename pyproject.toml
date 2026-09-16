@@ -1,6 +1,6 @@
 [project]
 name = "nodc-geography"
-version = "1.0.0"
+version = "2.0.0"
 description = "Default template for PDM package"
 authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
