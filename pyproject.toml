@@ -1,12 +1,14 @@
 [project]
 name = "nodc-geography"
-version = "1.0.0b"
+version = "1.0.0"
 description = "Default template for PDM package"
 authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
 ]
 dependencies = [
     "geopandas>=0.14.3",
+    "geopy>=2.4.1",
+    "nodc-config",
     "pyyaml>=6.0.1",
 ]
 requires-python = ">=3.11"
@@ -14,22 +16,34 @@ readme = "README.md"
 license = {text = "MIT"}
 
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-
-[tool.pdm]
-distribution = true
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-mypkg = ["."]
+requires = ["uv_build>=0.9.27,<0.10.0"]
+build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
     "pyinstaller>=4.5.1",
     "matplotlib>=3.10.0",
-    "ruff>=0.12.9",
+    "ruff>=0.16.6",
+    "nodc-config",
 ]
+
+[tool.ruff]
+line-length = 90
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "A",  # flake8-builtins
+    "F",  # pyflakes
+    "E", # pycodestyle: error
+    "W",  # pycodestyle: warning
+    "I",  # isort: unsorted-imports
+    "RUF"  # Ruff-specific rules
+]
+
+per-file-ignores."__init__.py" = ["F401"]
+
+[tool.uv.sources]
+nodc-config = { git = "https://github.com/nodc-sweden/nodc-config.git", rev = "v0.1.0" }
+

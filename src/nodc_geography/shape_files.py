@@ -32,8 +32,8 @@ class ShapeFilesConfig:
             for variable in item["mapping"]:
                 if self._variable_to_path_mapping.get(variable):
                     logger.warning(
-                        f"Variable already added from other file: {variable} (duplicate in "
-                        f"{file_stem})"
+                        f"Variable already added from other file: {variable} "
+                        f"(duplicate in {file_stem})"
                     )
                     continue
                 file_path = self._shape_files_dir / f"{file_stem}.shp"
@@ -82,7 +82,8 @@ class ShapeFile:
     def get(self, x_pos: float, y_pos: float, variable: str) -> str | None:
         """Returns the value for the given variable at given position.
         variable kan be location_county, location_water_district etc.
-        the variable is mapped by the column_translation to match the files internal variable"""
+        the variable is mapped by the column_translation to match the
+        files internal variable"""
         boolean = self._gdf.contains(Point(x_pos, y_pos))
         translated_variable = self._translation.get(variable)
         if not translated_variable:
@@ -95,16 +96,15 @@ class ShapeFile:
             return
         filtered = self._gdf[boolean][translated_variable]
         if len(filtered) != 1:
-            # logger.warning(f'{len(filtered)} posts found for pos: {x_pos}-{y_pos} and variable:'
-            #                               f' {translated_variable}')
             return
         return filtered.values[0]
 
     @functools.cache
     def get_all(self, x_pos: float, y_pos: float, variable: str) -> dict:
-        """Returns all values for the given variable and its siblings in the same shape file.
-        variable kan be location_county, location_water_district etc.
-        the variable is mapped by the column_translation to match the files internal variable"""
+        """Returns all values for the given variable and its siblings in the
+        same shape file. variable kan be location_county, location_water_district etc.
+        the variable is mapped by the column_translation to match the files
+        internal variable"""
 
         boolean = self._gdf.contains(Point(x_pos, y_pos))
         translated_variable = self._translation.get(variable)
