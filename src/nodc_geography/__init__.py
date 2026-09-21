@@ -43,7 +43,6 @@ def _get_shapefile_for_variable(
     path = shape_file_config.get_file_path_for_variable(variable)
     translation = shape_file_config.get_translations_for_file(path)
     epsg = shape_file_config.get_epsg_for_file(path)
-
     obj = _get_shape_file_obj(path, epsg=epsg, **kwargs)
     obj.set_translation(translation)
     return obj
