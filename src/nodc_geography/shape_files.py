@@ -55,6 +55,14 @@ class ShapeFilesConfig:
     def get_file_path_for_variable(self, variable: str) -> pathlib.Path:
         return self._variable_to_path_mapping.get(variable)
 
+    def get_epsg_for_file(self, file_path: pathlib.Path) -> str:
+        file_stem = file_path.stem
+        config = self._file_mapping.get(file_stem)
+        if not config:
+            logger.error(f"No configuration found for shapefile: {file_stem}")
+            return "3006"
+        return str(config.get("epsg", "3006"))
+
 
 class ShapeFile:
     def __init__(self, path: str | pathlib.Path, epsg: str = "3006", **kwargs):
