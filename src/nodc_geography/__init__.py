@@ -42,15 +42,14 @@ def _get_shapefile_for_variable(
     )
     path = shape_file_config.get_file_path_for_variable(variable)
     translation = shape_file_config.get_translations_for_file(path)
-    epsg = shape_file_config.get_epsg_for_file(path)
-    obj = _get_shape_file_obj(path, epsg=epsg, **kwargs)
+    obj = _get_shape_file_obj(path, **kwargs)
     obj.set_translation(translation)
     return obj
 
 
 @functools.cache
-def _get_shape_file_obj(path: pathlib.Path, epsg: str = "3006", **kwargs):
-    return shape_files.ShapeFile(path, epsg=epsg, **kwargs)
+def _get_shape_file_obj(path: pathlib.Path, **kwargs):
+    return shape_files.ShapeFile(path, **kwargs)
 
 
 def clear_cache():
