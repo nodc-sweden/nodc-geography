@@ -57,15 +57,14 @@ class ShapeFilesConfig:
 
 
 class ShapeFile:
-    def __init__(self, path: str | pathlib.Path, epsg: str = "3006", **kwargs):
+    def __init__(self, path: str | pathlib.Path, **kwargs):
         self._path = pathlib.Path(path)
-        self._epsg = "EPSG:" + epsg.split(":")[-1]
         self._translation = dict()
         self._load_file()
 
     @property
     def _epsg_nr(self):
-        return self._epsg.split(":")[1]
+        return self._gdf.crs.to_epsg() if self._gdf.crs else None
 
     @property
     def gdf(self) -> gpd.GeoDataFrame:
@@ -73,7 +72,6 @@ class ShapeFile:
 
     def _load_file(self):
         self._gdf = gpd.read_file(self._path)
-        self._gdf.crs = self._epsg
 
     def set_translation(self, translation: dict):
         self._translation = translation
