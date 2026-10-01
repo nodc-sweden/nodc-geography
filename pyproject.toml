@@ -1,7 +1,7 @@
 [project]
 name = "nodc-geography"
-version = "2.0.0"
-description = "Default template for PDM package"
+version = "2.0.1"
+description = "Python package to handle shape-files within nodc-sweden"
 authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
 ]
